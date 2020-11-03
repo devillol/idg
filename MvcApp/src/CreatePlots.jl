@@ -21,7 +21,7 @@ function create_grouped_df(df, gr_min, fun)
 end
 
 function create_electrovert(date_from, date_to, gr_min; output_dir, fun=median)
-    files = ["/Users/ruabvmf/Documents/idg/DATA/ELECTROVERT/$(date[1:4])/$(date[6:7])/electrovert.$(date).csv" for date=map(string,Date(date_from):Day(1):Date(date_to))]
+    files = ["***/idg/DATA/ELECTROVERT/$(date[1:4])/$(date[6:7])/electrovert.$(date).csv" for date=map(string,Date(date_from):Day(1):Date(date_to))]
     dfs = filter(x -> x isa DataFrame, map(x -> skipError(x, CSV.read), files))
     
     df = create_grouped_df(vcat(dfs...), gr_min, fun)
@@ -35,7 +35,7 @@ function create_electrovert(date_from, date_to, gr_min; output_dir, fun=median)
 end
 
 function create_lemi(date_from, date_to, gr_min; output_dir, fun=mean)
-    files = ["/Users/ruabvmf/Documents/idg/DATA/LEMI018/$(date[1:4])/$(date[6:7])/lemi018.$(date).csv" for date=map(string,Date(date_from):Day(1):Date(date_to))]
+    files = ["***/idg/DATA/LEMI018/$(date[1:4])/$(date[6:7])/lemi018.$(date).csv" for date=map(string,Date(date_from):Day(1):Date(date_to))]
     dfs = filter(x -> x isa DataFrame, map(x -> skipError(x, CSV.read), files))
     #df = CSV.read("/Users/ruabvmf/Documents/idg/DATA/LEMI018/$(date[1:4])/$(date[6:7])/lemi018.$(date).csv")
     format = "Y-m-d H:M:S.s"
@@ -69,7 +69,7 @@ function create_spectr(date_from, date_to, gr_min=NaN; output_dir, fun=nothing)
     """
 
     for date=map(string, Date(date_from):Day(1):Date(date_to))
-        src_path = "/Users/ruabvmf/Documents/idg/DATA/SPECTR/$(date[1:4])/$(date[6:7])/"
+        src_path = "***/idg/DATA/SPECTR/$(date[1:4])/$(date[6:7])/"
         files = filter(x -> contains(x, string(date)), readdir(src_path))
         html_line  *= """
         <table>
