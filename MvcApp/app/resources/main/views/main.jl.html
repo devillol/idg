@@ -1,0 +1,19 @@
+<div class="content">
+<!--<form action="/" method="POST">-->
+  <p><span>Система: </span><select id="system" name="system" onchange="tuggle_number_picker(this)">
+    <option value="electrovert">ELECTROVERT</option>
+    <option value="lemi018">LEMI018</option>
+    <option value="spectr">SPECTR</option>
+  </select></p>
+<p><span>Период от </span><input id="date_from" type="date" name="date_from" value="2019-12-22"><span> до </span>
+<input id="date_to" type="date" name="date_to" value="2019-12-22"></p>
+<p id="number-picker-block">Аггрегировать по <input id="number-picker" type="number" value="10" min="1" max="60" step="1" name="gr_min"> минут(ы)</p>
+<p id="function-block"><span>Функция аггрегирования: </span><select id="function" name="function" onchange="tuggle_number_picker(this)">
+  <option value="mean">Среднее</option>
+  <option value="median">Медиана</option>
+</select></p>
+<p><input type="submit" value="Отправить" class="btn btn-default" onclick="create_plot()"></p>
+<!--</form>-->
+<div class="loader" style="display: none;"></div>
+<iframe id="mainframe" src="" width="100%" height="1000px" style="display: none;">Ваш браузер не поддерживает фреймы</frame>
+</div>

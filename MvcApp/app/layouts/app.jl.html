@@ -1,0 +1,22 @@
+<!-- app/layouts/app.jl.html -->
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <title>WebApp</title>
+    <link href="/css/genie/bootstrap.min.css" rel="stylesheet">
+    <link href="/css/genie/style.css" rel="stylesheet">
+    <link href="/css/genie/prism.css" rel="stylesheet" />
+    <link href="/css/main.css" rel="stylesheet" />
+  </head>
+  <body>
+    <%
+      @yield
+    %>
+    <script src="/js/main.js"></script>
+    <script src="/js/genie/jquery.min.js"></script>
+    <script src="/js/genie/bootstrap.min.js"></script>
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <script src="/js/genie/prism.js"></script>
+  </body>
+</html>
