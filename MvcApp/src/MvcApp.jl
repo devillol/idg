@@ -5,6 +5,7 @@ using Logging, LoggingExtras
 function main()
   Base.eval(Main, :(const UserApp = MvcApp))
 
+
   include(joinpath("..", "genie.jl"))
 
   Base.eval(Main, :(const Genie = MvcApp.Genie))

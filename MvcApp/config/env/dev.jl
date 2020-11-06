@@ -9,3 +9,7 @@ const config = Settings(
 )
 
 ENV["JULIA_REVISE"] = "auto"
+
+ENV["SOURCE_DATA_PATH"] = "/Users/ruabsg2/idg/DATA"
+const APP_PATH = abspath(normpath(joinpath(@__DIR__, "..", "..")))
+ENV["APP_PATH"] = APP_PATH
