@@ -16,7 +16,7 @@ module MainController
     elseif system == "spectr"
       CreatePlots.create_spectr
     end
-    file = basename(plot_fun(date_from, date_to, gr_min, fun=fun, output_dir="***/MvcApp/public/plots"))
+    file = basename(plot_fun(date_from, date_to, gr_min, fun=fun, output_dir="$(ENV["APP_PATH"])/public/plots"))
     json(Dict("file" => file))
   end
 end
