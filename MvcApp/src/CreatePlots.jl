@@ -9,7 +9,7 @@ const SOURCE_DATA_PATH = ENV["SOURCE_DATA_PATH"]
 function create_plot(system, date_from, date_to, output_dir;
     group_interval ::Union{Second,Minute, Hour} = Second(0))
 
-    format = "Y-m-d H:M:S.s"
+    format = "Y-mm-dd HH:MM:SS.s"
 
     files = ["$SOURCE_DATA_PATH/$(uppercase(system))/$(date[1:4])/$(date[6:7])/$(lowercase(system)).$(date).csv"
     for date=map(string,Date(date_from):Day(1):Date(date_to))]
@@ -44,7 +44,7 @@ function create_plot(system, date_from, date_to, output_dir;
     Dict("csv_path" => csv_path, "plt_path" => plt_path)
 end
 function sma_plot(csv_path, html_path; n=10)
-    format = "Y-m-d H:M:S.s"
+    format = "Y-mm-dd HH:MM:SS.s"
     df = CSV.read(csv_path, dateformat=format)
     df = ifelse.(ismissing.(df), NaN, df)
     ta = TimeArray(df, timestamp=:Time)
@@ -105,7 +105,7 @@ function create_spectr(date_from, date_to, gr_min=NaN; output_dir, fun=nothing)
 end
 
 function download_trunc(arrayChecked, csv_path)
-    format = "Y-m-d H:M:S.s"
+    format = "Y-mm-dd HH:MM:SS.s"
     df = select(CSV.read(csv_path, dateformat=format), :Time, arrayChecked)
     filename = csv_path[begin:end-4] * join(arrayChecked) * ".csv"
     CSV.write(filename, df, dateformat=format)
