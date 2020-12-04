@@ -1,0 +1,39 @@
+<div class="content">
+    <!--<form action="/" method="POST">-->
+    <!--    <p><span>Период от </span><input class="date_to" id="date_from" name="date_from"><span> до </span>-->
+    <!--        <input class="date_to" id="date_to" name="date_to"></p>-->
+    <!--    <p id="number-picker-block">Отбирать по <input id="number-picker" type="number" value="10" min="1" max="60" step="1" name="gr_min"> минут(ы)</p>-->
+    <p>Выберите период:</p>
+    <div class="input-daterange input-group" id="datepicker">
+        <input id="date_from" type="text" class="input-sm form-control" name="date_from" />
+        <span class="input-group-addon">to</span>
+        <input id="date_to" type="text" class="input-sm form-control" name="date_to" />
+    </div>
+    <p><input type="submit" value="Отправить" class="btn btn-primary btn-lg" onclick="create_plot()"></p>
+    <!--</form>-->
+    <p><input id="sma" type="submit" value="Сгладить" class="btn btn-secondary btn-lg" onclick="sma_plot()" style="display: none;"></p>
+
+    <div id="download_box" class="card" style="width: 30%; display: none;">
+        <div class="card-body">
+            <div class="checkbox">
+                <label><input id="I1" type="checkbox" name="columns" value="I1" checked>I1</label>
+            </div>
+            <div class="checkbox">
+                <label><input id="I2"  type="checkbox" name="columns" value="I2" checked>I2</label>
+            </div>
+            <div class="dropdown show">
+                <a class="btn btn-secondary dropdown-toggle" role="button" href="#" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Скачать CSV
+                </a>
+
+                <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                    <button type="button" id="full_csv" class="dropdown-item">Скачать полный CSV</button>
+                    <button type="button" id="trunc_csv" class="dropdown-item" onclick="download_trunc()">Скачать разреженный CSV</button>
+                    <button type="button" id="sma_csv" class="dropdown-item" style="display: none;">Скачать CSV со сглаженными данными</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="loader" class="loader" style="display: none;"></div>
+    <iframe id="plotframe" src="" scrolling="auto" width="100%" height="2500px" style="display: none;">Ваш браузер не поддерживает фреймы</frame>
+</div>

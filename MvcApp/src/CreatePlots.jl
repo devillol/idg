@@ -1,64 +1,72 @@
 module CreatePlots
 
 using PlotlyJS
-using CSV, Dates, Statistics, DataFrames
+using CSV, Dates, Statistics, DataFrames, TimeSeries, MarketTechnicals
 
 const SOURCE_DATA_PATH = ENV["SOURCE_DATA_PATH"]
 
-function skipError(x, fun, default=NaN)
-    try 
-        fun(x)
-    catch
-        default
-    end
-end
 
-function create_grouped_df(df, gr_min, fun)
-    format = DateFormat("Y-m-d H:M:S.s")
-    trunc = DataFrames.select(df, :Time => ByRow(x -> floor(DateTime(x, format), Minute(gr_min)))=> :Time, :)    
-    #rename(x -> replace(x, "_function"=> ""), aggregate(trunc, :Time, fun ∘ skipmissing))
-    cols = [c for c in names(df) if c != "Time"]
-    combine(groupby(trunc, :Time), cols .=> (x -> skipError(x, fun ∘ skipmissing)) .=> cols)
-end
+function create_plot(system, date_from, date_to, output_dir;
+    group_interval ::Union{Second,Minute, Hour} = Second(0))
 
-function create_electrovert(date_from, date_to, gr_min; output_dir, fun=median)
-    files = ["$SOURCE_DATA_PATH/ELECTROVERT/$(date[1:4])/$(date[6:7])/electrovert.$(date).csv"
-                for date=map(string,Date(date_from):Day(1):Date(date_to))]
-    dfs = filter(x -> x isa DataFrame, map(x -> skipError(x, CSV.read), files))
-    
-    df = create_grouped_df(vcat(dfs...), gr_min, fun)
-    sct1 = scatter(; x=df.Time, y=df.I1, mode="lines", name="I1")
-    sct2 = scatter(; x=df.Time, y=df.I2, mode="lines", name="I2")
-    layout = Layout(;title="$(string(fun)) I by every $gr_min minutes for $date_from to $date_to",
-                     xaxis=attr(title="Time", showgrid=true, zeroline=false),
-                     yaxis=attr(title="I", zeroline=false))
-    plt = Plot([sct1, sct2], layout)
-    savefig(plt, "$output_dir/electrovert-$date_from-$date_to-$(string(fun)).html")
-end
-
-function create_lemi(date_from, date_to, gr_min; output_dir, fun=mean)
-    files = ["$SOURCE_DATA_PATH/LEMI018/$(date[1:4])/$(date[6:7])/lemi018.$(date).csv"
+    format = "Y-mm-dd HH:MM:SS.s"
+    print("SOURCE_DATA_PATH = $SOURCE_DATA_PATH")
+    files = ["$SOURCE_DATA_PATH/$(uppercase(system))/$(date[1:4])/$(date[6:7])/$(lowercase(system)).$(date).csv"
     for date=map(string,Date(date_from):Day(1):Date(date_to))]
-    dfs = filter(x -> x isa DataFrame, map(x -> skipError(x, CSV.read), files))
-    #df = CSV.read("/Users/ruabvmf/Documents/idg/DATA/LEMI018/$(date[1:4])/$(date[6:7])/lemi018.$(date).csv")
-    format = "Y-m-d H:M:S.s"
-    df = create_grouped_df(vcat(dfs...), gr_min, fun)
-    layout1 = Layout(;title="B for $date_from to $date_to ($(string(fun)) by every $gr_min minutes)",
-                    xaxis=attr(title="Time", showgrid=true, zeroline=false),
-                    yaxis=attr(title="B", zeroline=false))
-    plt1 = Plot([scatter(; x=df.Time, y=df.Bx, mode="lines", name="Bx"), 
-            scatter(; x=df.Time, y=df.By, mode="lines", name="By"),
-            scatter(; x=df.Time, y=df.Bz, mode="lines", name="Bz")], layout1
-            )
+    files = filter(x -> isfile(x), files)
+    if isempty(files); return "NO DATA" end
 
-    layout2 = Layout(;title="T for $date_from to $date_to ($(string(fun)) by every $gr_min minutes)",
-            xaxis=attr(title="Time", showgrid=true, zeroline=false),
-            yaxis=attr(title="T", zeroline=false))
-    plt2 = Plot([scatter(; x=df.Time, y=df.Tin, mode="lines", name="Tin"), 
-    scatter(; x=df.Time, y=df.Tout, mode="lines", name="Tout")], layout2
-    )
-    plt = [plt1, plt2]
-    savefig(plt, "$output_dir/lemi018-$date_from-$date_to.html")
+    if group_interval.value == 0
+        step = length(files) * 60
+        while mod(86400, step) > 0; step -= 1 end
+    else
+        step = Second(group_interval).value
+    end
+
+    if system == "electrovert"; step *= 100 end
+
+    dfs = map(x -> CSV.read(x, dateformat=format)[begin:step:end, :], files)
+
+    df = vcat(dfs...)
+
+    plts = [Plot(scatter(; x=df["Time"], y=df[c], mode="lines", name=c),
+                Layout(;title="$c for $date_from to $date_to",
+                    xaxis=attr(title="Time", showgrid=true, zeroline=false),
+                    yaxis=attr(title=c, zeroline=false)))
+                    for c in names(df) if c != "Time"]
+
+    plt = [plts...]
+    csv_path = "$output_dir/$(lowercase(system))-$date_from-$date_to-$step.csv"
+    CSV.write(csv_path, df, dateformat=format)
+
+    plt_path = savefig(plt, "$output_dir/$(lowercase(system))-$date_from-$date_to.html")
+
+    Dict("csv_path" => csv_path, "plt_path" => plt_path)
+end
+function sma_plot(csv_path, html_path; n=10)
+    format = "Y-mm-dd HH:MM:SS.s"
+    df = CSV.read(csv_path, dateformat=format)
+    df = ifelse.(ismissing.(df), NaN, df)
+    ta = TimeArray(df, timestamp=:Time)
+
+    date_from = Date(timestamp(ta)[1])
+    date_to = Date(timestamp(ta)[end])
+    ta = sma(ta, n)
+
+    plts = [Plot([scatter(; x=df["Time"], y=df[c], mode="lines", name="$c orig"),
+                  scatter(; x=timestamp(ta), y=values(ta["$(c)_sma_$n"]), mode="lines", name="$c sma")  ],
+                Layout(;title="$c for $date_from to $date_to",
+                    xaxis=attr(title="Time", showgrid=true, zeroline=false),
+                    yaxis=attr(title=c, zeroline=false)))
+                    for c in names(df) if c != "Time"]
+
+    plt = [plts...]
+    csv_path = csv_path[begin:end-4] * "_sma_$n.csv"
+    CSV.write(csv_path, df, dateformat=format)
+
+    plt_path = savefig(plt, html_path)
+
+    Dict("csv_path" => csv_path, "plt_path" => plt_path)
 end
 
 function create_spectr(date_from, date_to, gr_min=NaN; output_dir, fun=nothing)
@@ -94,5 +102,13 @@ function create_spectr(date_from, date_to, gr_min=NaN; output_dir, fun=nothing)
         write(f, html_line)
     end
     path
+end
+
+function download_trunc(arrayChecked, csv_path)
+    format = "Y-mm-dd HH:MM:SS.s"
+    df = select(CSV.read(csv_path, dateformat=format), :Time, arrayChecked)
+    filename = csv_path[begin:end-4] * join(arrayChecked) * ".csv"
+    CSV.write(filename, df, dateformat=format)
+    Dict("filename" => filename)
 end
 end
