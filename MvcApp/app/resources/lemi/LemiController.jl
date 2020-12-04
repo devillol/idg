@@ -5,11 +5,11 @@ module LemiController
       pattern = r"lemi018\.(\d{4}-\d{2}-\d{2})\.csv"
       files = vcat([f for (r,d,f) in walkdir("$(ENV["SOURCE_DATA_PATH"])/LEMI018") if f!= [".DS_Store"]]...)
       dates = [d[1] for d in match.(pattern, files)]
-      print(dates)
+
       min_d = minimum(dates)
       max_d = maximum(dates)
       dates_disabled = ["'$(string(d))'" for d=Date(min_d):Day(1):Date(max_d) if !(string(d) in dates)]
-      print(dates_disabled)
+
         datepicker = "
   var startDateDef = new Date('$min_d');
 var endDateDef = new Date('$max_d');
@@ -24,7 +24,6 @@ var endDateDef = new Date('$max_d');
     clearBtn: true
 });
 "
-print(datepicker)
     open("$(ENV["APP_PATH"])/public/js/lemi_dp.js", "w") do f
         write(f, datepicker)
     end

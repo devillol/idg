@@ -1,29 +1,28 @@
-// var startDateDef = new Date('2019-12-02');
-// var endDateDef = new Date('2020-01-29');
-//
-// // var $start = $(".input-daterange").find('#date_from');
-// // var $end = $(".input-daterange").find('#date_to');
-//
-// $(".input-daterange").datepicker({
-//     orientation: "bottom auto",
-//     format: 'yyyy-mm-dd',
-//     weekStart: 1,
-//     startDate: startDateDef,
-//     endDate: endDateDef,
-//     datesDisabled: [
-//         '2019-12-20',
-//         '2019-12-25',
-//         '2020-01-04'
-//     ],
-//     todayHighlight: true,
-//     clearBtn: true
-// });
-
-// $end.on('show', function(e){
-//     var date = $start.datepicker('getDate');
-//     // date = moment(date).toDate();
-//     $end.datepicker('setStartDate', date);
-// });
+$(document).ready(function() {
+    "use strict";
+    $('.menu > ul > li:has( > ul)').addClass('menu-dropdown-icon');
+    $('.menu > ul > li > ul:not(:has(ul))').addClass('normal-sub');
+    $(".menu > ul").before("<a href=\"#\" class=\"menu-mobile\">&nbsp;</a>");
+    $(".menu > ul > li").hover(function(e) {
+        if ($(window).width() > 943) {
+            $(this).children("ul").stop(true, false).fadeToggle(150);
+            e.preventDefault();
+        }
+    });
+    $(".menu > ul > li").click(function() {
+        if ($(window).width() <= 943) {
+            $(this).children("ul").fadeToggle(150);
+        }
+    });
+    $(".menu-mobile").click(function(e) {
+        $(".menu > ul").toggleClass('show-on-mobile');
+        e.preventDefault();
+    });
+});
+$(window).resize(function() {
+    $(".menu > ul > li").children("ul").hide();
+    $(".menu > ul").removeClass('show-on-mobile');
+});
 
 let trunc_csv_path = "";
 let sma_csv_path = "";
