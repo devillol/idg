@@ -10,7 +10,7 @@ function create_plot(system, date_from, date_to, output_dir;
     group_interval ::Union{Second,Minute, Hour} = Second(0))
 
     format = "Y-mm-dd HH:MM:SS.s"
-
+    print("SOURCE_DATA_PATH = $SOURCE_DATA_PATH")
     files = ["$SOURCE_DATA_PATH/$(uppercase(system))/$(date[1:4])/$(date[6:7])/$(lowercase(system)).$(date).csv"
     for date=map(string,Date(date_from):Day(1):Date(date_to))]
     files = filter(x -> isfile(x), files)

@@ -1,23 +1,23 @@
-var startDateDef = new Date('2019-12-02');
-var endDateDef = new Date('2020-01-29');
-
-// var $start = $(".input-daterange").find('#date_from');
-// var $end = $(".input-daterange").find('#date_to');
-
-$(".input-daterange").datepicker({
-    orientation: "bottom auto",
-    format: 'yyyy-mm-dd',
-    weekStart: 1,
-    startDate: startDateDef,
-    endDate: endDateDef,
-    datesDisabled: [
-        '2019-12-20',
-        '2019-12-25',
-        '2020-01-04'
-    ],
-    todayHighlight: true,
-    clearBtn: true
-});
+// var startDateDef = new Date('2019-12-02');
+// var endDateDef = new Date('2020-01-29');
+//
+// // var $start = $(".input-daterange").find('#date_from');
+// // var $end = $(".input-daterange").find('#date_to');
+//
+// $(".input-daterange").datepicker({
+//     orientation: "bottom auto",
+//     format: 'yyyy-mm-dd',
+//     weekStart: 1,
+//     startDate: startDateDef,
+//     endDate: endDateDef,
+//     datesDisabled: [
+//         '2019-12-20',
+//         '2019-12-25',
+//         '2020-01-04'
+//     ],
+//     todayHighlight: true,
+//     clearBtn: true
+// });
 
 // $end.on('show', function(e){
 //     var date = $start.datepicker('getDate');
