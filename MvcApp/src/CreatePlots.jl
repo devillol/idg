@@ -69,7 +69,7 @@ function sma_plot(csv_path, html_path; n=10)
     Dict("csv_path" => csv_path, "plt_path" => plt_path)
 end
 
-function create_spectr(date_from, date_to, gr_min=NaN; output_dir, fun=nothing)
+function create_spectr(date_from, date_to, output_dir)
     html_line = """
     <html>
         <head>
@@ -101,7 +101,20 @@ function create_spectr(date_from, date_to, gr_min=NaN; output_dir, fun=nothing)
     open(path, "w") do f
         write(f, html_line)
     end
-    path
+    Dict("plt_path" => path)
+end
+
+function create_tec_rot(date_from, date_to, gr_min=NaN; output_dir, fun=nothing)
+    format = "Y-mm-dd HH:MM:SS.s"
+    print("SOURCE_DATA_PATH = $SOURCE_DATA_PATH")
+    files = ["$SOURCE_DATA_PATH/TEC_ROT/$(date[1:4])/$(date[6:7])/sigma_ROT_TEC_GPS_ROT.$(date).csv"
+        for date=map(string,Date(date_from):Day(1):Date(date_to))]
+    files = filter(x -> isfile(x), files)
+    if isempty(files); return "NO DATA"; end
+
+        dfs = map(x -> CSV.read(x, dateformat=format), files)
+
+    df = vcat(dfs...)
 end
 
 function download_trunc(arrayChecked, csv_path)
